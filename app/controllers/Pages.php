@@ -6,7 +6,8 @@
     
     public function index(){
       $data = [
-        'title' => 'MVCpractice',
+        'title' => 'AppDreamMVC',
+        'description' => 'Simple social network built on the DreamMVC PHP framework'
       ];
      
       $this->view('pages/index', $data);
@@ -14,7 +15,8 @@
 
     public function about(){
       $data = [
-        'title' => 'About Us'
+        'title' => 'About Us',
+        'description' => 'App to share posts with other users'
       ];
 
       $this->view('pages/about', $data);
