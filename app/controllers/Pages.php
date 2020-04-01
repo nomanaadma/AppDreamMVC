@@ -5,6 +5,10 @@
     }
     
     public function index(){
+      if(isLoggedIn()){
+        redirect('posts');
+      }
+
       $data = [
         'title' => 'AppDreamMVC',
         'description' => 'Simple social network built on the DreamMVC PHP framework'
