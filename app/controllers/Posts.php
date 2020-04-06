@@ -1,6 +1,7 @@
 <?php
   class Posts extends Controller {
     public function __construct(){
+      
       if(!isLoggedIn()){
         redirect('users/login');
       }
@@ -20,7 +21,9 @@
       $this->view('posts/index', $data);
     }
 
-    public function add(){
+    public function add() {
+      $rules = ['title' => 'required', 'body' => 'required'];
+
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -28,21 +31,14 @@
         $data = [
           'title' => trim($_POST['title']),
           'body' => trim($_POST['body']),
-          'user_id' => $_SESSION['user_id'],
-          'title_err' => '',
-          'body_err' => ''
+          'user_id' => $_SESSION['user_id']
         ];
 
-        // Validate data
-        if(empty($data['title'])){
-          $data['title_err'] = 'Please enter title';
-        }
-        if(empty($data['body'])){
-          $data['body_err'] = 'Please enter body text';
-        }
+        $validate = Validator::data($data, $rules);
+        $data['errors'] = $validate;
 
         // Make sure no errors
-        if(empty($data['title_err']) && empty($data['body_err'])){
+        if(count($data['errors']) == 0) {
           // Validated
           if($this->postModel->addPost($data)){
             flash('post_message', 'Post Added');
@@ -50,10 +46,9 @@
           } else {
             die('Something went wrong');
           }
-        } else {
-          // Load view with errors
-          $this->view('posts/add', $data);
         }
+
+        $this->view('posts/add', $data);
 
       } else {
         $data = [
@@ -66,6 +61,8 @@
     }
 
     public function edit($id){
+
+      $rules = ['title' => 'required', 'body' => 'required'];
       if($_SERVER['REQUEST_METHOD'] == 'POST'){
         // Sanitize POST array
         $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
@@ -74,21 +71,14 @@
           'id' => $id,
           'title' => trim($_POST['title']),
           'body' => trim($_POST['body']),
-          'user_id' => $_SESSION['user_id'],
-          'title_err' => '',
-          'body_err' => ''
+          'user_id' => $_SESSION['user_id']
         ];
 
-        // Validate data
-        if(empty($data['title'])){
-          $data['title_err'] = 'Please enter title';
-        }
-        if(empty($data['body'])){
-          $data['body_err'] = 'Please enter body text';
-        }
+        $validate = Validator::data($data, $rules);
+        $data['errors'] = $validate;
 
         // Make sure no errors
-        if(empty($data['title_err']) && empty($data['body_err'])){
+        if(count($data['errors']) == 0) {
           // Validated
           if($this->postModel->updatePost($data)){
             flash('post_message', 'Post Updated');
@@ -96,10 +86,9 @@
           } else {
             die('Something went wrong');
           }
-        } else {
-          // Load view with errors
-          $this->view('posts/edit', $data);
         }
+        
+        $this->view('posts/edit', $data);
 
       } else {
         // Get existing post from model
